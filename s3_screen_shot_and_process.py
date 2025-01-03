@@ -18,10 +18,10 @@ pred_path  = r'F:\zlgz\pred2'
 
 WINDOW_TITLE = u'砖了个砖'
 
-left   = 1814
-top    = 164
-right  = 2338
-bottom = 906
+left   = 1827 
+top    = 182
+right  = 2431
+bottom = 1036
 
 #hx90
 # left   = 1358

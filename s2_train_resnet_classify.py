@@ -15,7 +15,7 @@ plt.rcParams['font.sans-serif'] = ['SimHei']  # 指定默认字体为黑体  -
 plt.rcParams['axes.unicode_minus'] = False  # 解决保存图像时负号'-'显示为方块的问题 
 
 data_dir = r'F:\zlgz\reorg_data'
-ft_model_path = r'F:\zlgz\resnet50_finetune.pth'
+ft_model_path = r'F:\zlgz\resnet34_finetune.pth'
 
 def reorg_dog_data(data_dir, valid_ratio):
     labels = d2l.read_csv_labels(os.path.join(data_dir, 'labels.csv'))
@@ -24,22 +24,28 @@ def reorg_dog_data(data_dir, valid_ratio):
 
 batch_size = 16
 valid_ratio = 0.1
-_classes = 38
+_classes = 49
 
 reorg_dog_data(data_dir, valid_ratio)
 
 ##################################
 transform_train = torchvision.transforms.Compose([
+    # 随机裁剪图像，所得图像为原始面积的0.08～1之间，高宽比在3/4和4/3之间。
+    # 然后，缩放图像以创建224x224的新图像
     torchvision.transforms.RandomResizedCrop(224, scale=(0.08, 1.0),ratio=(3.0/4.0, 4.0/3.0)),
     torchvision.transforms.RandomHorizontalFlip(),
+    # 随机更改亮度，对比度和饱和度
     torchvision.transforms.ColorJitter(brightness=0.4,contrast=0.4,saturation=0.4),
+    # 添加随机噪声
     torchvision.transforms.ToTensor(),
+    # 标准化图像的每个通道
     torchvision.transforms.Normalize([0.485, 0.456, 0.406],
                                      [0.229, 0.224, 0.225])])
 
 
 transform_test = torchvision.transforms.Compose([
     torchvision.transforms.Resize(256),
+    # 从图像中心裁切224x224大小的图片
     torchvision.transforms.CenterCrop(224),
     torchvision.transforms.ToTensor(),
     torchvision.transforms.Normalize([0.485, 0.456, 0.406],
@@ -64,14 +70,14 @@ test_iter  = torch.utils.data.DataLoader(test_ds, batch_size, shuffle=False, dro
 
 def get_net(devices):
     finetune_net = nn.Sequential()
-    finetune_net.features = torchvision.models.resnet50(pretrained=True)
-
+    finetune_net.features = torchvision.models.resnet34(pretrained=True)
+    # 定义一个新的输出网络，共有_classes个输出类别
     finetune_net.output_new = nn.Sequential(nn.Linear(1000, 128),
                                             nn.ReLU(),
                                             nn.Linear(128, _classes))
-
+    # 将模型参数分配给用于计算的CPU或GPU
     finetune_net = finetune_net.to(devices[0])
-
+    # 冻结参数
     for param in finetune_net.features.parameters():
         param.requires_grad = False
         
@@ -134,6 +140,6 @@ if __name__ == '__main__':
     devices, num_epochs, lr, wd = d2l.try_all_gpus(), 50, 1e-4, 1e-4
     lr_period, lr_decay, net = 2, 0.9, get_net(devices)
     train(net, train_iter, valid_iter, num_epochs, lr, wd, devices, lr_period, lr_decay)
-    torch.save(net,r'F:\zlgz\resnet34_finetune.pth')
+    torch.save(net,ft_model_path)
     
     

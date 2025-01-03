@@ -12,6 +12,8 @@ from misc import clear_folder_pngs
 from s2_train_resnet_classify import transform_test,ft_model_path,batch_size,data_dir
 from s3_screen_shot_and_process import block_path,pred_path
 
+warning_thres_hold = 0.75
+
 test_ds = torchvision.datasets.ImageFolder(block_path, transform=transform_test) 
 test_iter = torch.utils.data.DataLoader(test_ds, batch_size, shuffle=False, drop_last=False)
 
@@ -34,10 +36,10 @@ def predict_every_block():
             image_name = os.path.split(iimg[0])[-1].split('.')[0]
             des_path = os.path.join(pred_path,'_'.join((image_name,str(idx),pngs[idx],'{:.2f}'.format(np.max(ioutput)))) + '.png')
             image.save(des_path)
-            if np.max(ioutput) < 0.7:
+            if np.max(ioutput) < warning_thres_hold:
                 print(image_name,idx,pngs[idx],np.max(ioutput))
                 
 if __name__ == '__main__':
-    predict_every_block()
+    pass
     
             

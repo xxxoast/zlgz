@@ -98,9 +98,9 @@ def png2jpg():
     
     
 if __name__ == '__main__':
-#     random_create_train_data()
-#     create_d2l_data_src()
-    pass
+    random_create_train_data()
+    create_d2l_data_src()
+    ##记得手动删掉train_valid_test文件夹，这就别自动删了。。
 
     
     

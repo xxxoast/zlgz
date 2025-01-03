@@ -40,28 +40,30 @@ class mouse_simu(object):
         win32api.mouse_event(win32con.MOUSEEVENTF_MOVE | win32con.MOUSEEVENTF_ABSOLUTE, x, y, 0, 0)
     
     def drag_mouse(self, start_x, start_y, target_x, target_y):
+        # 获取屏幕分辨率，用于将坐标转换为绝对坐标（范围是0 - 65535）
         screen_width = win32api.GetSystemMetrics(0)
         screen_height = win32api.GetSystemMetrics(1)
         max_coord = 65535
     
+        # 将起始坐标和目标坐标转换为绝对坐标范围（0 - 65535）
         start_x_abs  = int(start_x / screen_width * max_coord)
         start_y_abs  = int(start_y / screen_height * max_coord)
         target_x_abs = int(target_x / screen_width * max_coord)
         target_y_abs = int(target_y / screen_height * max_coord)
         
-
+        # 按下鼠标左键
         self.mouse_down(start_x, start_y)
-
+        # 计算移动的步数，这里简单设置为100步，可根据需要调整精度
         step_x = (target_x_abs - start_x_abs) / self.num_steps
         step_y = (target_y_abs - start_y_abs) / self.num_steps
-
+        # 逐步移动鼠标到目标位置
         for _ in range(self.num_steps):
             start_x_abs += step_x
             start_y_abs += step_y
             self.mouse_move(int(start_x_abs), int(start_y_abs))
-            time.sleep(self.sleep_per_time)  
+            time.sleep(self.sleep_per_time)  # 短暂停顿，控制移动速度，可根据实际情况调整
     
-
+        # 松开鼠标左键
         self.mouse_up(target_x, target_y)
         time.sleep(random.uniform(self.TIME_INTERVAL_MIN, self.TIME_INTERVAL_MAX))
         
