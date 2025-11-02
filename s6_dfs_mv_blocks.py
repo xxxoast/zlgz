@@ -10,6 +10,8 @@ from mouse_simu import block_mouse_operation
 from s3_screen_shot_and_process import block_h_line,block_v_line,block_size
 from s3_screen_shot_and_process import block_path,pred_path
 
+start_time = time.time()
+
 src_path = r'F:\zlgz\reorg_data\train_valid_test\train'
 _classes = [ i for i in os.listdir(src_path) ]
 
@@ -487,7 +489,7 @@ def click_screen():
             print(f'{idx}. click: ({i.y} {i.x})')
             bmo.click_block(i.y,i.x)
         elif i.op_type == 1:
-            print(f'{idx}. move: ({i.y} {i.x}) {i.step} {symbol[i._dir]})')
+            print(f'{idx}. move: ({i.y} {i.x}) {i.step} {symbol[i._dir]}')
             bmo.move_block(i.y,i.x,i.step,i._dir)
 #         time.sleep(GAME_SPEED)
 
@@ -510,6 +512,9 @@ def dfs(move_count_all,block_id_count,erased_blocks):
     if move_count_all == total_count:
         stop_flag = True
         print('solution path found')
+        end_time = time.time()
+        execution_time = end_time - start_time
+        print("代码执行时间为:", execution_time, "秒")
         click_screen()
         return True
     

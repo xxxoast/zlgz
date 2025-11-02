@@ -15,49 +15,64 @@ des_path   = os.path.join(desktop_path,'screen.png')
 
 block_path = r'F:\zlgz\blocks'
 pred_path  = r'F:\zlgz\pred2'
+pred_path2  = r'F:\zlgz\pred3'
 
 WINDOW_TITLE = u'砖了个砖'
 
-left   = 1827 
-top    = 182
-right  = 2431
-bottom = 1036
+# game_windows  = (1872, 18, 2487, 1135)
+# block_windows = (1900, 186,2462, 985)
 
-#hx90
-# left   = 1358
-# top    = 169
-# right  = 1892
-# bottom = 934
+#2015.11.02 new version
+game_windows  = (1798, 28, 2488, 1277)
+block_windows = (1828, 289,2457, 1181)
+
+left_margin_ratio   = ( block_windows[0] - game_windows[0] ) / ( game_windows[2] - game_windows[0] )
+top_margin_ratio    = ( block_windows[1] - game_windows[1] ) / ( game_windows[3] - game_windows[1] )
+right_margin_ratio  = ( game_windows[2] - block_windows[2] ) / ( game_windows[2] - game_windows[0] )
+bottom_margin_ratio = ( game_windows[3] - block_windows[3] ) / ( game_windows[3] - game_windows[1] )
+
+left, top, right, bottom = 0, 0, 0, 0
 
 block_h_line = 10
 block_v_line = 14
-
-block_size = float( ( ( right - left ) / block_h_line + ( bottom - top ) / block_v_line )  / 2)
-
-# print('block_size = ',block_size)
+global block_size
+global all_square_list
 
 margin_pixel_min_thres = 1000
 
-global all_square_list
-
-def getGameWindow():
-    # FindWindow(lpClassName=None, lpWindowName=None)  窗口类名 窗口标题名
-    window = win32gui.FindWindow(None, WINDOW_TITLE)
-    print(window)
-
-    while not window:
-        print('Failed to locate the game window , reposition the game window after 10 seconds...')
-        time.sleep(10)
+def get_block_pos():
+    def getGameWindow():
+        # FindWindow(lpClassName=None, lpWindowName=None)  窗口类名 窗口标题名
         window = win32gui.FindWindow(None, WINDOW_TITLE)
+        print(window)
 
-    win32gui.SetForegroundWindow(window)
-    pos = win32gui.GetWindowRect(window)
-    print("Game windows at " + str(pos))
-    return (pos[0], pos[1])
+        while not window:
+            print('Failed to locate the game window , reposition the game window after 10 seconds...')
+            time.sleep(10)
+            window = win32gui.FindWindow(None, WINDOW_TITLE)
+
+        win32gui.SetForegroundWindow(window)
+        pos = win32gui.GetWindowRect(window)
+        print("Game windows at " + str(pos))
+        return pos
+
+    cur_game_pos = getGameWindow()
+
+    global left, top, right, bottom
+    left   = int(cur_game_pos[0] +  ( cur_game_pos[2]  - cur_game_pos[0] )* left_margin_ratio )
+    top    = int(cur_game_pos[1] +  ( cur_game_pos[3]  - cur_game_pos[1] )* top_margin_ratio )
+    right  = int(cur_game_pos[2] -  ( cur_game_pos[2]  - cur_game_pos[0] )* right_margin_ratio )
+    bottom = int(cur_game_pos[3] -  ( cur_game_pos[3]  - cur_game_pos[1] )* bottom_margin_ratio )
+
+    global block_size
+    block_size = float(((right - left) / block_h_line + (bottom - top) / block_v_line) / 2)
+
+    print('left = {}, top = {}, right = {}, bottom = {}, block_size = {}'.format(left,top,right,bottom,block_size))
 
 def getScreenImage():
     print('Shot screen...')
     region = (left, top, right, bottom)
+    print(region)
     scim = ImageGrab.grab(region)
     scim.save(des_path)
     return cv2.imread(des_path)
@@ -74,11 +89,10 @@ def dumpAllSquare(screen_image):
     return 
 
 def cut_screen():
-    getGameWindow()
     screen_image = getScreenImage()
     dumpAllSquare(screen_image)
-    
+
+get_block_pos()
+
 if __name__ == '__main__':
-    getGameWindow()
-    screen_image = getScreenImage()
-    
+    cut_screen()

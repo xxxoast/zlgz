@@ -6,10 +6,6 @@ import torchvision
 from torch import nn
 from d2l import torch as d2l
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
-
 import matplotlib.pyplot as plt  
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 指定默认字体为黑体  -
 plt.rcParams['axes.unicode_minus'] = False  # 解决保存图像时负号'-'显示为方块的问题 

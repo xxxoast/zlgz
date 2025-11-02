@@ -25,4 +25,5 @@ if __name__ == '__main__':
     cut_screen()
     predict_every_block()
     create_block_map()
+
     
