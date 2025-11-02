@@ -1,6 +1,7 @@
 #coding:utf-8
 from s3_screen_shot_and_process import cut_screen,pred_path
 from s4_pred_every_block import predict_every_block
+import s7_cpp_dfs_mv_blocks
 
 import pandas as pd
 import os
@@ -23,7 +24,12 @@ def create_block_map():
 
 if __name__ == '__main__':
     cut_screen()
-    predict_every_block()
+    uncertains = predict_every_block()
     create_block_map()
+    if len(uncertains) == 0:
+        s7_cpp_dfs_mv_blocks.auto_move()
+    else:
+        print('please check F:\zlgz\pred3 first, modify block map, \
+               then manually run S7 auto_move()')
 
     
