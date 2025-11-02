@@ -8,7 +8,7 @@ import os
 
 desktop_path = os.path.join(os.environ["USERPROFILE"], "Desktop")
      
-block_map_path       = os.path.join(desktop_path,'block_map.csv')
+block_map_path = os.path.join(desktop_path,'block_map.csv')
 operation_path = os.path.join(desktop_path,'oplist.csv')
 
 def create_block_map():

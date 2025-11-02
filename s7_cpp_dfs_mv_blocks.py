@@ -2,7 +2,7 @@
 
 from mouse_simu import block_mouse_operation
 from s3_screen_shot_and_process import block_size
-from autorun import operation_path
+import autorun
 
 import os
 import pandas as pd
@@ -16,7 +16,7 @@ def auto_move():
     os.system(cpp_exe_path)
     
     bmo = block_mouse_operation(block_size)
-    df = pd.read_csv(operation_path,header = None,dtype = int)
+    df = pd.read_csv(autorun.operation_path,header = None,dtype = int)
     print(df.head())
      
     for i,row in df.iterrows():

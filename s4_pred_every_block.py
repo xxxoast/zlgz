@@ -28,7 +28,9 @@ def predict_every_block():
     
     clear_folder_pngs(pred_path)
     clear_folder_pngs(pred_path2)
-    
+
+    uncertains = []
+
     for (data, label), src_iter in zip(test_iter,test_input_iter):
         output = torch.nn.functional.softmax(net(data.to(devices[0])), dim=1)
         tmp = output.cpu().detach().numpy()
@@ -46,6 +48,9 @@ def predict_every_block():
              
             if np.max(ioutput) < warning_thres_hold:
                 print(image_name,idx,pngs[idx],np.max(ioutput))
+                uncertains.append((image_name,idx,pngs[idx],np.max(ioutput)))
+
+    return uncertains
                 
 if __name__ == '__main__':
     predict_every_block()
